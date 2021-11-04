@@ -1,19 +1,11 @@
 const express = require("express");
+const connectDB = require("./config/mongodb_cfg");
+
 const apiRouter = express.Router();
-const mongoose = require("mongoose");
-const { MongoClient } = require("mongodb");
-const Users = require("./models/users");
-const bcrypt = require("bcryptjs");
 const auth = require("./middleware/auth");
 const userController = require("./controllers/user");
 
-// mongo config
-const mongoDB =
-  "mongodb+srv://greg:GWv1lKty2hArudjx@cluster0.wsuqu.mongodb.net/node-api4-project?retryWrites=true&w=majority";
-
-mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
+connectDB();
 
 apiRouter.use(express.json());
 // test api root
