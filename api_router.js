@@ -4,6 +4,8 @@ const { users } = require("./data");
 const { v4: uuidv4 } = require("uuid");
 const mongoose = require("mongoose");
 const { MongoClient } = require("mongodb");
+const { getUsers } = require("./controllers/userController");
+const Users = require("./models/users");
 
 // mongo config
 const mongoDB =
@@ -27,7 +29,9 @@ apiRouter.get("/", (req, res) => {
 });
 
 apiRouter.get("/users", (req, res) => {
-  res.status(200).send(users);
+  Users.find()
+    .then((users) => res.status(200).send(users))
+    .catch((err) => res.status(500).send(err));
 });
 
 apiRouter.post("/register", (req, res) => {
