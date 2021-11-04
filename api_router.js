@@ -1,7 +1,5 @@
 const express = require("express");
 const apiRouter = express.Router();
-const { users } = require("./data");
-const { v4: uuidv4 } = require("uuid");
 const mongoose = require("mongoose");
 const { MongoClient } = require("mongodb");
 const { getUsers } = require("./controllers/userController");
@@ -18,7 +16,6 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 apiRouter.use(express.json());
 
 apiRouter.get("/", (req, res) => {
-  // this is the root route
   res
     .status(200)
     .send(
@@ -41,12 +38,12 @@ apiRouter.post("/register", (req, res) => {
   }
 
   const newUser = {
-    id: uuidv4(),
     username,
     password,
   };
-  users.push(newUser);
-  res.status(201).send(newUser);
+  Users.create(newUser)
+    .then((user) => res.status(201).send(user))
+    .catch((err) => res.status(500).send(err));
 });
 
 module.exports = apiRouter;
