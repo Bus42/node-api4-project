@@ -9,4 +9,5 @@ const port = process.env.PORT || 5000;
 
 server.listen(port, () => {
   console.log(`**Server is running on port ${port}**`.america);
+  console.log("API documentation available at https://serene-clarke-8aa423.netlify.app/".blue)
 });
