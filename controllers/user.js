@@ -21,12 +21,12 @@ function getUsers(req, res) {
 function registerUser(req, res) {
   const { username, password } = req.body;
   if (!username || !password) {
-    res.status(400).send("Please provide username and password");
+    res.status(400).send({ error: "Please provide username and password" });
   } else {
     Users.findOne({ username })
       .then((user) => {
         if (user) {
-          res.status(400).send("Username already exists");
+          res.status(400).send({ error: "Username already exists" });
         } else {
           bcrypt
             .hash(password, 10)
@@ -44,31 +44,27 @@ function registerUser(req, res) {
 
 function loginUser(req, res) {
   const { username, password } = req.body;
-  if (!username || !password) {
-    res.status(400).send("Please provide username and password");
-  } else {
-    Users.findOne({ username })
-      .then((user) => {
-        if (!user) {
-          res.status(400).send("User not found");
-        } else {
-          bcrypt
-            .compare(password, user.password)
-            .then((isMatch) => {
-              if (isMatch) {
-                const token = jwt.sign({ id: user._id }, process.env.SECRET, {
-                  expiresIn: "24h",
-                });
-                res.status(200).send({ token });
-              } else {
-                res.status(400).send("Incorrect password");
-              }
-            })
-            .catch((err) => res.status(500).send(err));
-        }
-      })
-      .catch((err) => res.status(500).send(err));
-  }
+  Users.findOne({ username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send({ error: "User not found" });
+      } else {
+        bcrypt
+          .compare(password, user.password)
+          .then((isMatch) => {
+            if (isMatch) {
+              const token = jwt.sign({ id: user._id }, process.env.SECRET, {
+                expiresIn: "24h",
+              });
+              res.status(200).send({ token });
+            } else {
+              res.status(400).send({ error: "Invalid credentials" });
+            }
+          })
+          .catch((err) => res.status(500).send(err));
+      }
+    })
+    .catch((err) => res.status(500).send(err));
 }
 
 function getUserById(req, res) {
