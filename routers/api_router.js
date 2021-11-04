@@ -1,9 +1,9 @@
 const express = require("express");
-const connectDB = require("./config/mongodb_cfg");
+const connectDB = require("../config/mongodb_cfg");
 
 const apiRouter = express.Router();
-const auth = require("./middleware/auth");
-const userController = require("./controllers/user");
+const auth = require("../middleware/auth");
+const userController = require("../controllers/user");
 
 connectDB();
 
