@@ -2,8 +2,8 @@ const express = require("express");
 const apiRouter = express.Router();
 const mongoose = require("mongoose");
 const { MongoClient } = require("mongodb");
-const { getUsers } = require("./controllers/userController");
 const Users = require("./models/users");
+const bcrypt = require("bcryptjs");
 
 // mongo config
 const mongoDB =
@@ -34,16 +34,25 @@ apiRouter.get("/users", (req, res) => {
 apiRouter.post("/register", (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
-    res.status(400).send("username and password are required");
+    res.status(400).send("Please provide username and password");
+  } else {
+    Users.findOne({ username })
+      .then((user) => {
+        if (user) {
+          res.status(400).send("Username already exists");
+        } else {
+          bcrypt
+            .hash(password, 10)
+            .then((hash) => {
+              Users.create({ username, password: hash })
+                .then((user) => res.status(201).send(user))
+                .catch((err) => res.status(500).send(err));
+            })
+            .catch((err) => res.status(500).send(err));
+        }
+      })
+      .catch((err) => res.status(500).send(err));
   }
-
-  const newUser = {
-    username,
-    password,
-  };
-  Users.create(newUser)
-    .then((user) => res.status(201).send(user))
-    .catch((err) => res.status(500).send(err));
 });
 
 module.exports = apiRouter;
