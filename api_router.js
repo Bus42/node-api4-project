@@ -55,4 +55,30 @@ apiRouter.post("/register", (req, res) => {
   }
 });
 
+apiRouter.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    res.status(400).send("Please provide username and password");
+  } else {
+    Users.findOne({ username })
+      .then((user) => {
+        if (!user) {
+          res.status(400).send("User not found");
+        } else {
+          bcrypt
+            .compare(password, user.password)
+            .then((isMatch) => {
+              if (isMatch) {
+                res.status(200).send(user);
+              } else {
+                res.status(400).send("Incorrect password");
+              }
+            })
+            .catch((err) => res.status(500).send(err));
+        }
+      })
+      .catch((err) => res.status(500).send(err));
+  }
+})
+
 module.exports = apiRouter;
