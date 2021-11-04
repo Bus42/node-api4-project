@@ -1,5 +1,6 @@
 const Users = require("../models/users");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 function test(req, res) {
   res
@@ -55,7 +56,10 @@ function loginUser(req, res) {
             .compare(password, user.password)
             .then((isMatch) => {
               if (isMatch) {
-                res.status(200).send(user);
+                const token = jwt.sign({ id: user._id }, process.env.SECRET, {
+                  expiresIn: "24h",
+                });
+                res.status(200).send({ token });
               } else {
                 res.status(400).send("Incorrect password");
               }
