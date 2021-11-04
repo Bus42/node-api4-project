@@ -14,7 +14,7 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 apiRouter.use(express.json());
-
+// test api root
 apiRouter.get("/", (req, res) => {
   res
     .status(200)
@@ -24,13 +24,13 @@ apiRouter.get("/", (req, res) => {
       }</b> at <b>${new Date().toISOString()}</b> </p>`
     );
 });
-
+// get users
 apiRouter.get("/users", (req, res) => {
   Users.find()
     .then((users) => res.status(200).send(users))
     .catch((err) => res.status(500).send(err));
 });
-
+// register user
 apiRouter.post("/register", (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -54,7 +54,7 @@ apiRouter.post("/register", (req, res) => {
       .catch((err) => res.status(500).send(err));
   }
 });
-
+// login user with basic auth
 apiRouter.post("/login", (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -79,6 +79,13 @@ apiRouter.post("/login", (req, res) => {
       })
       .catch((err) => res.status(500).send(err));
   }
-})
+});
+// get user by id
+apiRouter.get("/users/:id", (req, res) => {
+  const { id } = req.params;
+  Users.findById(id)
+    .then((user) => res.status(200).send(user))
+    .catch((err) => res.status(500).send(err));
+});
 
 module.exports = apiRouter;
